@@ -1,9 +1,11 @@
-use axum::{Router, response::Html, routing::get};
+use axum::{Router, extract::Path, response::Html, routing::get};
 
 #[tokio::main]
 async fn main() {
     // build our application with a route
-    let app = Router::new().route("/", get(handler));
+    let app = Router::new()
+        .route("/", get(handler))
+        .route("/greet/{name}", get(greeting));
 
     // run it
     let listener = tokio::net::TcpListener::bind("127.0.0.1:3000")
@@ -15,4 +17,8 @@ async fn main() {
 
 async fn handler() -> Html<&'static str> {
     Html("<h1>Hello, World!</h1>")
+}
+
+async fn greeting(Path(name): Path<String>) -> String {
+    format!("Hello {name}!")
 }
